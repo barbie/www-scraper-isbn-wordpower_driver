@@ -1,6 +1,6 @@
 {
     "name": "WWW-Scraper-ISBN-WordPower_Driver",
-    "version": "0.05",
+    "version": "0.06",
     "abstract": "Search driver for Word Power online book catalog",
     "author": ["Barbie <barbie@cpan.org>"],
 
@@ -28,14 +28,14 @@
         },
         "test" : {
             "requires": {
-                "Test::More": "0.45"
+                "IO::File": "0",
+                "Test::More": "0.70"
             },
             "recommends": {
-                "Test::More": "0.70",
+                "Test::CPAN::Meta": "0",
+                "Test::CPAN::Meta::JSON": "0",
                 "Test::Pod": "1.00",
-                "Test::Pod::Coverage": "0.08",
-                "Test::CPAN::Meta": "0.13",
-                "Test::CPAN::Meta::JSON": "0.10"
+                "Test::Pod::Coverage": "0.08"
             }
         }
     },
@@ -43,7 +43,7 @@
     "provides": {
         "WWW::Scraper::ISBN::WordPower_Driver": {
             "file": "lib/WWW/Scraper/ISBN/WordPower_Driver.pm",
-            "version": "0.05"
+            "version": "0.06"
         }
     },
     "no_index": {
@@ -51,7 +51,7 @@
     },
 
     "resources": {
-        "license": "http://dev.perl.org/licenses/",
+        "license": "http://www.perlfoundation.org/artistic_license_2_0",
         "bugtracker": { "web": "http://rt.cpan.org/Public/Dist/Display.html?Name=WWW-Scraper-ISBN-WordPower_Driver" }
     }
 }

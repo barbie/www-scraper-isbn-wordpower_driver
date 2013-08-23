@@ -4,7 +4,7 @@ use strict;
 use warnings;
 
 use vars qw($VERSION @ISA);
-$VERSION = '0.05';
+$VERSION = '0.06';
 
 #--------------------------------------------------------------------------
 
@@ -51,8 +51,8 @@ my ($URL1,$URL2,$URL3) = ('http://www.word-power.co.uk','/books/[^>]+-I','/');
 
 =item C<search()>
 
-Creates a query string, then passes the appropriate form fields to the
-Word Power server.
+Creates a query string, then passes the appropriate form fields to the Word 
+Power server.
 
 The returned page should be the correct catalog page for that ISBN. If not the
 function returns zero and allows the next driver in the chain to have a go. If
@@ -77,8 +77,6 @@ a valid page is returned, the following fields are returned via the book hash:
 
 The book_link and image_link refer back to the Word Power website.
 
-=back
-
 =cut
 
 sub search {
@@ -87,7 +85,13 @@ sub search {
 	$self->found(0);
 	$self->book(undef);
 
-	my $mech = WWW::Mechanize->new();
+    # validate and convert into EAN13 format
+    my $ean = $self->convert_to_ean13($isbn);
+    return $self->handler("Invalid ISBN specified [$isbn]")   
+        if(!$ean || (length $isbn == 13 && $isbn ne $ean)
+                 || (length $isbn == 10 && $isbn ne $self->convert_to_isbn10($ean)));
+
+    my $mech = WWW::Mechanize->new();
     $mech->agent_alias( 'Windows IE 6' );
     $mech->add_header('Accept-Encoding' => undef);
 
@@ -125,26 +129,26 @@ sub search {
 #print STDERR "\n# content2=[\n$html\n]\n";
 
     my $data;
-    ($data->{publisher})                = $html =~ m!<td[^>]+>Publisher</td>\s*<td[^>]+><a[^>]+>([^<]+)</a></td>!si;
-    ($data->{pubdate})                  = $html =~ m!<td[^>]+>Publication date</td>\s*<td[^>]+>([^<]+)</td>!si;
+    ($data->{isbn10})           = $self->convert_to_isbn10($ean);
+    ($data->{publisher})        = $html =~ m!<td[^>]+>Publisher</td>\s*<td[^>]+><a[^>]+>([^<]+)</a></td>!i;
+    ($data->{pubdate})          = $html =~ m!<td[^>]+>Publication date</td>\s*<td[^>]+>([^<]+)</td>!i;
 
     $data->{publisher} =~ s!<[^>]+>!!g  if($data->{publisher});
     $data->{pubdate} =~ s!\s+! !g       if($data->{pubdate});
 
-    ($data->{isbn13})                   = $html =~ m!<td[^>]+>ISBN13</td>\s*<td[^>]+>([^<]+)</td>!si;
-    ($data->{isbn10})                   = $html =~ m!<td[^>]+>ISBN</td>\s*<td[^>]+>([^<]+)</td>!si;
-    ($data->{image})                    = $html =~ m!"(http://[^"]+/product_images/$data->{isbn13}.jpg)"!si;
-    ($data->{thumb})                    = $html =~ m!"(http://[^"]+/product_images/$data->{isbn13}.jpg)"!si;
-    ($data->{author})                   = $html =~ m!by\s*<a href="/author/[^/]+/">([^<]+)</a>!si;
-    ($data->{title})                    = $html =~ m!<p class="p_bookTitle"><b>([^<]+)</b>!si;
-    ($data->{description})              = $html =~ m!<div class="TabbedPanelsContentGroup">\s*<div class="TabbedPanelsContent">([^~]+)</div>!si;
-    ($data->{binding})                  = $html =~ m!<td[^>]+>Format</td>\s*<td[^>]+>([^<]+)</td>!si;
-    ($data->{pages})                    = $html =~ m!<tr valign="top">\s*<td valign="middle">Pages</td>\s*<td valign="middle">([\d.]+)</td>\s*</tr>!si;
-    ($data->{weight})                   = $html =~ m!<tr valign="top">\s*<td valign="middle">Weight .grammes.</td>\s*<td valign="middle">([\d.]+)</td>\s*</tr>!si;
-    ($data->{width})                    = $html =~ m!<td[^>]+>Width \(mm\)</td>\s*<td[^>]+>([^<]+)</td>!si;
-    ($data->{height})                   = $html =~ m!<td[^>]+>Height \(mm\)</td>\s*<td[^>]+>([^<]+)</td>!si;
+    ($data->{isbn13})           = $html =~ m!<td[^>]+>ISBN13</td>\s*<td[^>]+>([^<]+)</td>!i;
+    ($data->{isbn10})           = $html =~ m!<td[^>]+>ISBN</td>\s*<td[^>]+>([^<]+)</td>!i;
+    ($data->{image})            = $html =~ m!"(http://.*?/product_images/$data->{isbn13}.jpg)"!i;
+    ($data->{thumb})            = $html =~ m!"(http://.*?/product_images/$data->{isbn13}.jpg)"!i;
+    ($data->{author})           = $html =~ m!by\s*<a href="/author/[^/]+/">([^<]+)</a>!i;
+    ($data->{title})            = $html =~ m!<p class="p_bookTitle"><b>([^<]+)</b>!i;
+    ($data->{description})      = $html =~ m!<div class="TabbedPanelsContentGroup">\s*<div class="TabbedPanelsContent">([^~]+)</div>!si;
+    ($data->{binding})          = $html =~ m!<td[^>]+>Format</td>\s*<td[^>]+>([^<]+)</td>!s;
+    ($data->{pages})            = $html =~ m!<tr valign="top">\s*<td valign="middle">Pages</td>\s*<td valign="middle">([\d.]+)</td>\s*</tr>!s;
+    ($data->{weight})           = $html =~ m!<tr valign="top">\s*<td valign="middle">Weight .grammes.</td>\s*<td valign="middle">([\d.]+)</td>\s*</tr>!s;
+    ($data->{width})            = $html =~ m!<td[^>]+>Width \(mm\)</td>\s*<td[^>]+>([^<]+)</td>!s;
+    ($data->{height})           = $html =~ m!<td[^>]+>Height \(mm\)</td>\s*<td[^>]+>([^<]+)</td>!s;
 
-    $data->{isbn10} = sprintf "%010d", $data->{isbn10}   if($data->{isbn10});
     $data->{author} =~ s!<[^>]+>!!g                     if($data->{author});
     if($data->{description}) {
         $data->{description} =~ s!<script.*!!si;
@@ -185,7 +189,8 @@ sub search {
 		'pages'		    => $data->{pages},
 		'weight'		=> $data->{weight},
 		'width'		    => $data->{width},
-		'height'		=> $data->{height}
+		'height'		=> $data->{height},
+        'html'          => $html
 	};
 
 #use Data::Dumper;
@@ -194,6 +199,79 @@ sub search {
     $self->book($bk);
 	$self->found(1);
 	return $self->book;
+}
+
+=item C<convert_to_ean13()>
+
+Given a 10/13 character ISBN, this function will return the correct 13 digit
+ISBN, also known as EAN13.
+
+=item C<convert_to_isbn10()>
+
+Given a 10/13 character ISBN, this function will return the correct 10 digit 
+ISBN.
+
+=back
+
+=cut
+
+sub convert_to_ean13 {
+	my $self = shift;
+    my $isbn = shift;
+    my $prefix;
+
+    return  unless(length $isbn == 10 || length $isbn == 13);
+
+    if(length $isbn == 13) {
+        return  if($isbn !~ /^(978|979)(\d{10})$/);
+        ($prefix,$isbn) = ($1,$2);
+    } else {
+        return  if($isbn !~ /^(\d{10}|\d{9}X)$/);
+        $prefix = '978';
+    }
+
+    my $isbn13 = '978' . $isbn;
+    chop($isbn13);
+    my @isbn = split(//,$isbn13);
+    my ($lsum,$hsum) = (0,0);
+    while(@isbn) {
+        $hsum += shift @isbn;
+        $lsum += shift @isbn;
+    }
+
+    my $csum = ($lsum * 3) + $hsum;
+    $csum %= 10;
+    $csum = 10 - $csum  if($csum != 0);
+
+    return $isbn13 . $csum;
+}
+
+sub convert_to_isbn10 {
+	my $self = shift;
+    my $ean  = shift;
+    my ($isbn,$isbn10);
+
+    return  unless(length $ean == 10 || length $ean == 13);
+
+    if(length $ean == 13) {
+        return  if($ean !~ /^(?:978|979)(\d{9})\d$/);
+        ($isbn,$isbn10) = ($1,$1);
+    } else {
+        return  if($ean !~ /^(\d{9})[\dX]$/);
+        ($isbn,$isbn10) = ($1,$1);
+    }
+
+	return  if($isbn < 0 or $isbn > 999999999);
+
+	my ($csum, $pos, $digit) = (0, 0, 0);
+    for ($pos = 9; $pos > 0; $pos--) {
+        $digit = $isbn % 10;
+        $isbn /= 10;             # Decimal shift ISBN for next time 
+        $csum += ($pos * $digit);
+    }
+    $csum %= 11;
+    $csum = 'X'   if ($csum == 10);
+    return sprintf "%09d%s", $isbn10, $csum;
 }
 
 1;
@@ -222,7 +300,7 @@ RT system (http://rt.cpan.org/Public/Dist/Display.html?Name=WWW-Scraper-ISBN-Wor
 However, it would help greatly if you are able to pinpoint problems or even
 supply a patch.
 
-Fixes are dependant upon their severity and my availablity. Should a fix not
+Fixes are dependent upon their severity and my availability. Should a fix not
 be forthcoming, please feel free to (politely) remind me.
 
 =head1 AUTHOR
@@ -232,9 +310,9 @@ be forthcoming, please feel free to (politely) remind me.
 
 =head1 COPYRIGHT & LICENSE
 
-  Copyright (C) 2010,2011 Barbie for Miss Barbell Productions
+  Copyright (C) 2010-2013 Barbie for Miss Barbell Productions
 
-  This module is free software; you can redistribute it and/or
+  This distribution is free software; you can redistribute it and/or
   modify it under the Artistic Licence v2.
 
 =cut
