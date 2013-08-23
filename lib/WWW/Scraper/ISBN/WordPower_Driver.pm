@@ -4,7 +4,7 @@ use strict;
 use warnings;
 
 use vars qw($VERSION @ISA);
-$VERSION = '0.01';
+$VERSION = '0.02';
 
 #--------------------------------------------------------------------------
 
@@ -125,31 +125,34 @@ sub search {
 #print STDERR "\n# content2=[\n$html\n]\n";
 
     my $data;
-    ($data->{publisher})                = $html =~ m!<td[^>]+>Publisher</td>\s*<td[^>]+><a[^>]+>([^<]+)</a></td>!i;
-    ($data->{pubdate})                  = $html =~ m!<td[^>]+>Publication date</td>\s*<td[^>]+>([^<]+)</td>!i;
+    ($data->{publisher})                = $html =~ m!<td[^>]+>Publisher</td>\s*<td[^>]+><a[^>]+>([^<]+)</a></td>!si;
+    ($data->{pubdate})                  = $html =~ m!<td[^>]+>Publication date</td>\s*<td[^>]+>([^<]+)</td>!si;
 
     $data->{publisher} =~ s!<[^>]+>!!g  if($data->{publisher});
     $data->{pubdate} =~ s!\s+! !g       if($data->{pubdate});
 
-    ($data->{isbn13})                   = $html =~ m!<td[^>]+>ISBN13</td>\s*<td[^>]+>([^<]+)</td>!i;
-    ($data->{isbn10})                   = $html =~ m!<td[^>]+>ISBN</td>\s*<td[^>]+>([^<]+)</td>!i;
-    ($data->{image})                    = $html =~ m!"(http://.*?/product_images/$data->{isbn13}.jpg)"!i;
-    ($data->{thumb})                    = $html =~ m!"(http://.*?/product_images/$data->{isbn13}.jpg)"!i;
-    ($data->{author})                   = $html =~ m!by\s*<a href="/author/[^/]+/">([^<]+)</a>!i;
-    ($data->{title})                    = $html =~ m!<p class="p_bookTitle"><b>([^<]+)</b>!i;
+    ($data->{isbn13})                   = $html =~ m!<td[^>]+>ISBN13</td>\s*<td[^>]+>([^<]+)</td>!si;
+    ($data->{isbn10})                   = $html =~ m!<td[^>]+>ISBN</td>\s*<td[^>]+>([^<]+)</td>!si;
+    ($data->{image})                    = $html =~ m!"(http://[^"]+/product_images/$data->{isbn13}.jpg)"!si;
+    ($data->{thumb})                    = $html =~ m!"(http://[^"]+/product_images/$data->{isbn13}.jpg)"!si;
+    ($data->{author})                   = $html =~ m!by\s*<a href="/author/[^/]+/">([^<]+)</a>!si;
+    ($data->{title})                    = $html =~ m!<p class="p_bookTitle"><b>([^<]+)</b>!si;
     ($data->{description})              = $html =~ m!<div class="TabbedPanelsContentGroup">\s*<div class="TabbedPanelsContent">([^~]+)</div>!si;
-    ($data->{binding})                  = $html =~ m!<td[^>]+>Format</td>\s*<td[^>]+>([^<]+)</td>!s;
-    ($data->{pages})                    = $html =~ m!<tr valign="top">\s*<td valign="middle">Pages</td>\s*<td valign="middle">([\d.]+)</td>\s*</tr>!s;
-    ($data->{weight})                   = $html =~ m!<tr valign="top">\s*<td valign="middle">Weight .grammes.</td>\s*<td valign="middle">([\d.]+)</td>\s*</tr>!s;
-    ($data->{width})                    = $html =~ m!<td[^>]+>Width \(mm\)</td>\s*<td[^>]+>([^<]+)</td>!s;
-    ($data->{height})                   = $html =~ m!<td[^>]+>Height \(mm\)</td>\s*<td[^>]+>([^<]+)</td>!s;
+    ($data->{binding})                  = $html =~ m!<td[^>]+>Format</td>\s*<td[^>]+>([^<]+)</td>!si;
+    ($data->{pages})                    = $html =~ m!<tr valign="top">\s*<td valign="middle">Pages</td>\s*<td valign="middle">([\d.]+)</td>\s*</tr>!si;
+    ($data->{weight})                   = $html =~ m!<tr valign="top">\s*<td valign="middle">Weight .grammes.</td>\s*<td valign="middle">([\d.]+)</td>\s*</tr>!si;
+    ($data->{width})                    = $html =~ m!<td[^>]+>Width \(mm\)</td>\s*<td[^>]+>([^<]+)</td>!si;
+    ($data->{height})                   = $html =~ m!<td[^>]+>Height \(mm\)</td>\s*<td[^>]+>([^<]+)</td>!si;
 
-    $data->{author} =~ s!<[^>]+>!!g;
-    $data->{description} =~ s!<script.*!!si;
-    $data->{description} =~ s!<(p|br\s*/)>!\n!g;
-    $data->{description} =~ s!<[^>]+>!!gs;
-    $data->{description} =~ s! +$!!gm;
-    $data->{description} =~ s!\n\n!\n!gs;
+    $data->{isbn10} = sprintf "%010d", $data->{isbn10}   if($data->{isbn10});
+    $data->{author} =~ s!<[^>]+>!!g                     if($data->{author});
+    if($data->{description}) {
+        $data->{description} =~ s!<script.*!!si;
+        $data->{description} =~ s!<(p|br\s*/)>!\n!g;
+        $data->{description} =~ s!<[^>]+>!!gs;
+        $data->{description} =~ s! +$!!gm;
+        $data->{description} =~ s!\n\n!\n!gs;
+    }
 
 #use Data::Dumper;
 #print STDERR "\n# " . Dumper($data);
