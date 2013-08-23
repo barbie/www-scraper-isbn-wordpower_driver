@@ -1,5 +1,8 @@
 Revision history for Perl extension WWW-Scraper-ISBN-WordPower_Driver.
 
+0.05    23/05/2011
+        - updated image link tests.
+
 0.04    01/03/2011
         - amended pingtest() in network tests.
         - added further skip test if test books are withdrawn from the site.

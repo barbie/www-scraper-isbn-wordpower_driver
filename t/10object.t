@@ -25,8 +25,8 @@ my %tests = (
         [ 'is',     'width',        '159'           ],
         [ 'is',     'height',       '241'           ],
         [ 'is',     'weight',       '556'           ],
-        [ 'is',     'image_link',   'http://server40136.uk2net.com/~wpower/images/product_images/9781846057137.jpg' ],
-        [ 'is',     'thumb_link',   'http://server40136.uk2net.com/~wpower/images/product_images/9781846057137.jpg' ],
+        [ 'like',   'image_link',   qr|/product_images/9781846057137.jpg| ],
+        [ 'like',   'thumb_link',   qr|/product_images/9781846057137.jpg| ],
         [ 'like',   'description',  qr|John Grisham takes you into the heart of America's Deep South| ],
         [ 'like',   'book_link',    qr|http://www.word-power.co.uk/books/ford-county-I9781846057137/| ]
     ],
@@ -44,8 +44,8 @@ my %tests = (
         [ 'is',     'width',        129                 ],
         [ 'is',     'height',       198                 ],
         [ 'is',     'weight',       200                 ],
-        [ 'is',     'image_link',   'http://server40136.uk2net.com/~wpower/images/product_images/9780571239566.jpg' ],
-        [ 'is',     'thumb_link',   'http://server40136.uk2net.com/~wpower/images/product_images/9780571239566.jpg' ],
+        [ 'like',   'image_link',   qr|/product_images/9780571239566.jpg| ],
+        [ 'like',   'thumb_link',   qr|/product_images/9780571239566.jpg| ],
         [ 'like',   'description',  qr|Ian Curtis left behind a legacy rich in artistic genius| ],
         [ 'like',   'book_link',    qr|http://www.word-power.co.uk/books/touching-from-a-distance-I9780571239566/| ]
     ],
