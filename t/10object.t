@@ -2,7 +2,7 @@
 use strict;
 
 use lib './t';
-use Test::More tests => 65;
+use Test::More tests => 40;
 use WWW::Scraper::ISBN;
 
 ###########################################################
@@ -30,25 +30,6 @@ my %tests = (
         [ 'like',   'description',  qr|John Grisham takes you into the heart of America's Deep South| ],
         [ 'like',   'book_link',    qr|http://www.word-power.co.uk/books/ford-county-I9781846057137/| ]
     ],
-    '9780007203055' => [
-        [ 'is',     'isbn',         '9780007203055'             ],
-        [ 'is',     'isbn10',       '0007203055'                ],
-        [ 'is',     'isbn13',       '9780007203055'             ],
-        [ 'is',     'ean13',        '9780007203055'             ],
-        [ 'like',   'author',       qr/Simon Ball/              ],
-        [ 'like',   'title',        qr|The Bitter Sea|          ],
-        [ 'is',     'publisher',    'HarperPress'               ],
-        [ 'is',     'pubdate',      '01/04/2010'                ],
-        [ 'is',     'binding',      'Paperback'                 ],
-        [ 'is',     'pages',        416                         ],
-        [ 'is',     'width',        130                         ],
-        [ 'is',     'height',       197                         ],
-        [ 'is',     'weight',       312                         ],
-        [ 'is',     'image_link',   'http://server40136.uk2net.com/~wpower/images/product_images/9780007203055.jpg'    ],
-        [ 'is',     'thumb_link',   'http://server40136.uk2net.com/~wpower/images/product_images/9780007203055.jpg'    ],
-        [ 'like',   'description',  qr|A gripping history of the Mediterranean campaigns|            ],
-        [ 'like',   'book_link',    qr|http://www.word-power.co.uk/books/the-bitter-sea-I9780007203055/| ]
-    ],
     '9780571239566' => [
         [ 'is',     'isbn',         '9780571239566'     ],
         [ 'is',     'isbn10',       '0571239560'        ],
@@ -69,12 +50,6 @@ my %tests = (
         [ 'like',   'book_link',    qr|http://www.word-power.co.uk/books/touching-from-a-distance-I9780571239566/| ]
     ],
     
-    '9781408307557' => [
-        [ 'is',     'pages',        48                          ],
-        [ 'is',     'width',        128                         ],
-        [ 'is',     'height',       206                         ],
-        [ 'is',     'weight',       150                         ],
-    ],
 );
 
 my $tests = 0;
@@ -101,7 +76,7 @@ SKIP: {
     elsif($record->found) {
         ok(0,'Unexpectedly found a non-existent book');
     } else {
-		like($record->error,qr/Failed to find that book on WordPower website|website appears to be unavailable/);
+		like($record->error,qr/Failed to find that book|website appears to be unavailable/);
     }
 
     for my $isbn (keys %tests) {
@@ -111,6 +86,8 @@ SKIP: {
         SKIP: {
             skip "Website unavailable", scalar(@{ $tests{$isbn} }) + 2   
                 if($error =~ /website appears to be unavailable/);
+            skip "Book unavailable", scalar(@{ $tests{$isbn} }) + 2   
+                if($error =~ /Failed to find that book/ || !$record->found);
 
             unless($record->found) {
                 diag($record->error);
@@ -144,8 +121,12 @@ sub pingtest {
                 $^O =~ /dos|os2|mswin32|netware|cygwin/i    ? "ping -n 1 $domain "
                                                             : "ping -c 1 $domain >/dev/null 2>&1";
 
-    system($cmd);
-    my $retcode = $? >> 8;
-    # ping returns 1 if unable to connect
+    eval { system($cmd) }; 
+    if($@) {                # can't find ping, or wrong arguments?
+        diag();
+        return 1;
+    }
+
+    my $retcode = $? >> 8;  # ping returns 1 if unable to connect
     return $retcode;
 }

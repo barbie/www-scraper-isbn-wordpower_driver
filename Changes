@@ -1,5 +1,11 @@
 Revision history for Perl extension WWW-Scraper-ISBN-WordPower_Driver.
 
+0.04    01/03/2011
+        - amended pingtest() in network tests.
+        - added further skip test if test books are withdrawn from the site.
+        - upgraded to Test::CPAN::Meta::JSON for tests.
+        - reduced tests to basic set needed.
+
 0.03    06/10/2010
         - provided alternate ping test methods.
 
