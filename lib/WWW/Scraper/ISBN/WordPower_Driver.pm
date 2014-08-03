@@ -145,6 +145,11 @@ sub search {
     ($data->{width})            = $html =~ m!<td[^>]+>Width \(mm\)</td>\s*<td[^>]+>([^<]+)</td>!s;
     ($data->{height})           = $html =~ m!<td[^>]+>Height \(mm\)</td>\s*<td[^>]+>([^<]+)</td>!s;
 
+    for my $key (qw(weight width height)) {
+        next    unless($data->{$key});
+        $data->{$key} =~ s/\.0+$//;
+    }
+
     $data->{author} =~ s!<[^>]+>!!g                     if($data->{author});
     if($data->{description}) {
         $data->{description} =~ s!<script.*!!si;
