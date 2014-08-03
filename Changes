@@ -9,6 +9,7 @@ Revision history for WWW-Scraper-ISBN-WordPower_Driver
         - site data has changed for text samples.
         - removed redundant ISBN 10 conversion.
         - remove trailing decimals if integer is more appropriate.
+        - more test data samples.
 
 0.06    2013-03-10
         - added isbn-check.pl to examples.

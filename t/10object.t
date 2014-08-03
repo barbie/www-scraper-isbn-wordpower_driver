@@ -1,8 +1,8 @@
 #!/usr/bin/perl -w
 use strict;
 
-use lib './t';
-use Test::More tests => 43;
+use Data::Dumper;
+use Test::More tests => 63;
 use WWW::Scraper::ISBN;
 
 ###########################################################
@@ -50,6 +50,26 @@ my %tests = (
         [ 'is',     'thumb_link',   'http://images.word-power.co.uk/images/product_images/9780571313600.jpg'    ],
         [ 'like',   'description',  qr|Ian Curtis left behind a legacy rich in artistic genius| ],
         [ 'is',     'book_link',    q|http://www.word-power.co.uk/books/touching-from-a-distance-I9780571313600/| ]
+    ],
+    '9780751830415' => [
+        [ 'is',     'isbn',         '9780751830415'                 ],
+        [ 'is',     'isbn10',       '751830410'                     ],  # should be '0751830410', but is() removes the leading zero
+        [ 'is',     'isbn13',       '9780751830415'                 ],
+        [ 'is',     'ean13',        '9780751830415'                 ],
+        [ 'is',     'title',        'Geological Maps of England and Wales'  ],
+        [ 'is',     'author',       undef                           ],  # no author
+        [ 'like',   'publisher',    qr|British Geological Survey|   ],
+        [ 'is',     'pubdate',      '01/01/1996'                    ],
+        [ 'is',     'binding',      'Sheet map, folded'             ],
+        [ 'is',     'pages',        undef                           ],
+        [ 'is',     'width',        135                             ],
+        [ 'is',     'height',       225                             ],
+        [ 'is',     'depth',        undef                           ],
+        [ 'is',     'weight',       651                             ],
+        [ 'is',     'image_link',   'http://images.word-power.co.uk/images/product_images/9780751830415.jpg'    ],
+        [ 'is',     'thumb_link',   'http://images.word-power.co.uk/images/product_images/9780751830415.jpg'    ],
+        [ 'like',   'description',  qr|Shows the solid and drift geology together as the 'under-foot' geology|  ],
+        [ 'is',     'book_link',    q|http://www.word-power.co.uk/books/geological-maps-of-england-and-wales-I9780751830415/| ]
     ],
 );
 
