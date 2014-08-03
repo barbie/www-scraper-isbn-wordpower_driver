@@ -2,7 +2,7 @@
 use strict;
 
 use lib './t';
-use Test::More tests => 42;
+use Test::More tests => 43;
 use WWW::Scraper::ISBN;
 
 ###########################################################
@@ -31,25 +31,25 @@ my %tests = (
         [ 'like',   'description',  qr|Most Perl programmers were originally trained as C and Unix programmers,| ],
         [ 'is',     'book_link',    q|http://www.word-power.co.uk/books/higher-order-perl-I9781558607019/| ]
     ],
-    '9780571239566' => [
-        [ 'is',     'isbn',         '9780571239566'                 ],
-        [ 'is',     'isbn10',       '571239560'                     ],  # should be '0571239560', but is() removes the leading zero
-        [ 'is',     'isbn13',       '9780571239566'                 ],
-        [ 'is',     'ean13',        '9780571239566'                 ],
+    '9780571313600' => [
+        [ 'is',     'isbn',         '9780571313600'                 ],
+        [ 'is',     'isbn10',       '571313604'                     ],  # should be '0571313604', but is() removes the leading zero
+        [ 'is',     'isbn13',       '9780571313600'                 ],
+        [ 'is',     'ean13',        '9780571313600'                 ],
         [ 'is',     'title',        'Touching from a Distance'      ],
         [ 'is',     'author',       'Deborah Curtis'                ],
-        [ 'is',     'publisher',    'Faber and Faber'               ],
-        [ 'is',     'pubdate',      '04/10/2007'                    ],
+        [ 'like',   'publisher',    qr|Faber \S+ Faber|             ],
+        [ 'is',     'pubdate',      '02/10/2014'                    ],
         [ 'is',     'binding',      'Paperback'                     ],
-        [ 'is',     'pages',        240                             ],
+        [ 'is',     'pages',        256                             ],
         [ 'is',     'width',        129                             ],
         [ 'is',     'height',       198                             ],
         [ 'is',     'depth',        undef                           ],
-        [ 'is',     'weight',       200                             ],
-        [ 'is',     'image_link',   'http://images.word-power.co.uk/images/product_images/9780571239566.jpg'    ],
-        [ 'is',     'thumb_link',   'http://images.word-power.co.uk/images/product_images/9780571239566.jpg'    ],
+        [ 'is',     'weight',       651                             ],
+        [ 'is',     'image_link',   'http://images.word-power.co.uk/images/product_images/9780571313600.jpg'    ],
+        [ 'is',     'thumb_link',   'http://images.word-power.co.uk/images/product_images/9780571313600.jpg'    ],
         [ 'like',   'description',  qr|Ian Curtis left behind a legacy rich in artistic genius| ],
-        [ 'is',     'book_link',    q|http://www.word-power.co.uk/books/touching-from-a-distance-I9780571239566/| ]
+        [ 'is',     'book_link',    q|http://www.word-power.co.uk/books/touching-from-a-distance-I9780571313600/| ]
     ],
 );
 
@@ -62,7 +62,7 @@ my $scraper = WWW::Scraper::ISBN->new();
 isa_ok($scraper,'WWW::Scraper::ISBN');
 
 SKIP: {
-	skip "Can't see a network connection", $tests+1   if(pingtest($CHECK_DOMAIN));
+	skip "Can't see a network connection", $tests+2   if(pingtest($CHECK_DOMAIN));
 
 	$scraper->drivers($DRIVER);
 
@@ -77,6 +77,18 @@ SKIP: {
     } else {
 		like($record->error,qr/Invalid ISBN specified|Failed to find that book|website appears to be unavailable/);
     }
+
+    # this ISBN is now unavailable on the site
+    $isbn = '9780571239566';
+    eval { $record = $scraper->search($isbn); };
+    if($@) {
+        like($@,qr/Invalid ISBN specified/);
+    } elsif($record->found) {
+        ok(0,'Unexpectedly found a non-existent book');
+    } else {
+		like($record->error,qr/Invalid ISBN specified|Failed to find that book|website appears to be unavailable|Could not extract data/);
+    }
+
 
     for my $isbn (keys %tests) {
         eval { $record = $scraper->search($isbn) };

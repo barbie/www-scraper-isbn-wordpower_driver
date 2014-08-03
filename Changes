@@ -6,6 +6,7 @@ Revision history for WWW-Scraper-ISBN-WordPower_Driver
         - upgrade to WWW-Scraper-ISBN-1.00.
         - conversion routines now moved to WWW::Scraper::ISBN::Driver.
         - extended test suite.
+        - site data has changed for text samples.
 
 0.06    2013-03-10
         - added isbn-check.pl to examples.
