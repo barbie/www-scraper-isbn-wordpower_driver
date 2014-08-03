@@ -77,6 +77,8 @@ a valid page is returned, the following fields are returned via the book hash:
 
 The book_link and image_link refer back to the Word Power website.
 
+=back
+
 =cut
 
 sub search {
@@ -199,79 +201,6 @@ sub search {
     $self->book($bk);
 	$self->found(1);
 	return $self->book;
-}
-
-=item C<convert_to_ean13()>
-
-Given a 10/13 character ISBN, this function will return the correct 13 digit
-ISBN, also known as EAN13.
-
-=item C<convert_to_isbn10()>
-
-Given a 10/13 character ISBN, this function will return the correct 10 digit 
-ISBN.
-
-=back
-
-=cut
-
-sub convert_to_ean13 {
-	my $self = shift;
-    my $isbn = shift;
-    my $prefix;
-
-    return  unless(length $isbn == 10 || length $isbn == 13);
-
-    if(length $isbn == 13) {
-        return  if($isbn !~ /^(978|979)(\d{10})$/);
-        ($prefix,$isbn) = ($1,$2);
-    } else {
-        return  if($isbn !~ /^(\d{10}|\d{9}X)$/);
-        $prefix = '978';
-    }
-
-    my $isbn13 = '978' . $isbn;
-    chop($isbn13);
-    my @isbn = split(//,$isbn13);
-    my ($lsum,$hsum) = (0,0);
-    while(@isbn) {
-        $hsum += shift @isbn;
-        $lsum += shift @isbn;
-    }
-
-    my $csum = ($lsum * 3) + $hsum;
-    $csum %= 10;
-    $csum = 10 - $csum  if($csum != 0);
-
-    return $isbn13 . $csum;
-}
-
-sub convert_to_isbn10 {
-	my $self = shift;
-    my $ean  = shift;
-    my ($isbn,$isbn10);
-
-    return  unless(length $ean == 10 || length $ean == 13);
-
-    if(length $ean == 13) {
-        return  if($ean !~ /^(?:978|979)(\d{9})\d$/);
-        ($isbn,$isbn10) = ($1,$1);
-    } else {
-        return  if($ean !~ /^(\d{9})[\dX]$/);
-        ($isbn,$isbn10) = ($1,$1);
-    }
-
-	return  if($isbn < 0 or $isbn > 999999999);
-
-	my ($csum, $pos, $digit) = (0, 0, 0);
-    for ($pos = 9; $pos > 0; $pos--) {
-        $digit = $isbn % 10;
-        $isbn /= 10;             # Decimal shift ISBN for next time 
-        $csum += ($pos * $digit);
-    }
-    $csum %= 11;
-    $csum = 'X'   if ($csum == 10);
-    return sprintf "%09d%s", $isbn10, $csum;
 }
 
 1;
