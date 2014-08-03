@@ -94,22 +94,16 @@ sub search {
                  || (length $isbn == 10 && $isbn ne $self->convert_to_isbn10($ean)));
 
     my $mech = WWW::Mechanize->new();
-    $mech->agent_alias( 'Windows IE 6' );
+    $mech->agent_alias( 'Linux Mozilla' );
     $mech->add_header('Accept-Encoding' => undef);
 
     eval { $mech->get( SEARCH . $isbn ) };
     return $self->handler("WordPower website appears to be unavailable.")
 	    if($@ || !$mech->success() || !$mech->content());
 
-    my $pattern = $isbn;
-    if(length $isbn == 10) {
-        $pattern = '978' . $isbn;
-        $pattern =~ s/.$/./;
-    }
-
     my $content = $mech->content;
-    my ($link) = $content =~ m!($URL2$pattern$URL3)!si;
-#print STDERR "\n# link1=[$URL2$pattern$URL3]\n";
+    my ($link) = $content =~ m!($URL2$ean$URL3)!si;
+#print STDERR "\n# link1=[$URL2$ean$URL3]\n";
 #print STDERR "\n# link2=[$URL1$link]\n";
 #print STDERR "\n# content1=[\n$content\n]\n";
 #print STDERR "\n# is_html=".$mech->is_html().", content type=".$mech->content_type()."\n";

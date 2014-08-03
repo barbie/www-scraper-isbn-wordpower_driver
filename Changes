@@ -7,6 +7,7 @@ Revision history for WWW-Scraper-ISBN-WordPower_Driver
         - conversion routines now moved to WWW::Scraper::ISBN::Driver.
         - extended test suite.
         - site data has changed for text samples.
+        - removed redundant ISBN 10 conversion.
 
 0.06    2013-03-10
         - added isbn-check.pl to examples.
