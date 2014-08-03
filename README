@@ -26,6 +26,7 @@ This module requires these other modules:
 
 For testing the module requires these modules:
 
+  Data::Dumper
   IO::File
   Test::More
 
@@ -38,7 +39,7 @@ For optional testing the module would like these other modules:
 
 COPYRIGHT AND LICENSE
 
-  Copyright (C) 2010-2013 Barbie for Miss Barbell Productions
+  Copyright (C) 2010-2014 Barbie for Miss Barbell Productions
 
   This distribution is free software; you can redistribute it and/or
   modify it under the Artistic Licence v2.
