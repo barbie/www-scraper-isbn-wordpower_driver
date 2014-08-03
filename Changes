@@ -1,4 +1,7 @@
-Revision history for Perl extension WWW-Scraper-ISBN-WordPower_Driver.
+Revision history for WWW-Scraper-ISBN-WordPower_Driver
+======================================================
+
+        - added git repository links to metadata.
 
 0.06    2013-03-10
         - added isbn-check.pl to examples.
