@@ -1,6 +1,7 @@
 Revision history for WWW-Scraper-ISBN-WordPower_Driver
 ======================================================
 
+0.07    2014-08-12
         - added git repository links to metadata.
         - fixed distribution name in metadata.
         - upgrade to WWW-Scraper-ISBN-1.00.

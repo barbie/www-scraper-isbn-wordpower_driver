@@ -1,6 +1,6 @@
 --- #YAML:1.0
 name:                   WWW-Scraper-ISBN-WordPower_Driver
-version:                0.06
+version:                0.07
 abstract:               Search driver for Word Power online book catalog
 author:
   - Barbie <barbie@cpan.org>
@@ -27,7 +27,7 @@ build_requires:
 provides:
   WWW::Scraper::ISBN::WordPower_Driver:
     file:     lib/WWW/Scraper/ISBN/WordPower_Driver.pm
-    version:  0.06
+    version:  0.07
 no_index:
   directory:
     - t
