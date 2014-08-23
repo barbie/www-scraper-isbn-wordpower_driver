@@ -41,7 +41,7 @@ my %tests = (
         [ 'like',   'publisher',    qr|Faber \S+ Faber|             ],
         [ 'is',     'pubdate',      '02/10/2014'                    ],
         [ 'is',     'binding',      'Paperback'                     ],
-        [ 'is',     'pages',        256                             ],
+        [ 'is',     'pages',        240                             ],
         [ 'is',     'width',        129                             ],
         [ 'is',     'height',       198                             ],
         [ 'is',     'depth',        undef                           ],
