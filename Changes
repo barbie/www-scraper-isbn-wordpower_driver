@@ -1,6 +1,7 @@
 Revision history for WWW-Scraper-ISBN-WordPower_Driver
 ======================================================
 
+0.08    2014-08-31
         - test data fixed.
         - fixed license fields in META.json to be lists.
 
