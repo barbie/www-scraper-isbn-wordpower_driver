@@ -45,7 +45,7 @@ my %tests = (
         [ 'is',     'width',        129                             ],
         [ 'is',     'height',       198                             ],
         [ 'is',     'depth',        undef                           ],
-        [ 'is',     'weight',       651                             ],
+        [ 'is',     'weight',       207                             ],
         [ 'is',     'image_link',   'http://images.word-power.co.uk/images/product_images/9780571313600.jpg'    ],
         [ 'is',     'thumb_link',   'http://images.word-power.co.uk/images/product_images/9780571313600.jpg'    ],
         [ 'like',   'description',  qr|Ian Curtis left behind a legacy rich in artistic genius| ],
