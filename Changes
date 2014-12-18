@@ -1,6 +1,8 @@
 Revision history for WWW-Scraper-ISBN-WordPower_Driver
 ======================================================
 
+        - ping fix for Cygwin (thanks to Alexandr Ciornii).
+
 0.09    2014-09-18
         - more test data fixed.
         
