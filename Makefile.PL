@@ -8,7 +8,7 @@ use ExtUtils::MakeMaker;
 
 WriteMakefile(
     AUTHOR              => 'Barbie <barbie@cpan.org>',
-    NAME                => 'WWW-Scraper-ISBN-WordPower_Driver',
+    NAME                => 'WWW::Scraper::ISBN::WordPower_Driver',
     VERSION_FROM        => 'lib/WWW/Scraper/ISBN/WordPower_Driver.pm',
     ABSTRACT            => 'Search driver for Word Power online book catalog',
     NO_META             => 1,
